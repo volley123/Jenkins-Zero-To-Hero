@@ -1,14 +1,13 @@
 pipeline {
-  agent {
-    docker { 
-      image 'node:16-alpine'
-      args '-v /c/ProgramData/Jenkins/.jenkins/workspace/test-project:/workspace -w /workspace'
-    }
-  }
+  agent any
   stages {
     stage('Test') {
       steps {
-        sh 'node --version'
+        script {
+          docker.image('node:16-alpine').inside('-v /c/ProgramData/Jenkins/.jenkins/workspace/test-project:/workspace -w /workspace') {
+            sh 'node --version'
+          }
+        }
       }
     }
   }
