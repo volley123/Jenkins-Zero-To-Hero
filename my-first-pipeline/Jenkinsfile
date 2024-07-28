@@ -1,15 +1,17 @@
 pipeline {
-  agent {
-    docker { 
-      image 'node:16-alpine' 
-      args '-v /c/ProgramData/Jenkins/.jenkins/workspace/test-project:/workspace -w /workspace'
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                script {
+                    // Convert Windows path to Unix path
+                    def workspacePath = "${env.WORKSPACE}".replaceAll("\\\\", "/").replaceAll("C:", "/c")
+                    
+                    docker.image('node:16-alpine').inside("-v ${workspacePath}:/workspace -w /workspace") {
+                        sh 'node --version'
+                    }
+                }
+            }
+        }
     }
-  }
-  stages {
-    stage('Test') {
-      steps {
-        sh 'node --version'
-      }
-    }
-  }
 }
